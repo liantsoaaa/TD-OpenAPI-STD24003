@@ -18,12 +18,13 @@ paths:
     post:
       summary: Create tasks
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/TaskInput'
       responses:
         '201':
           description: Created
@@ -34,8 +35,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Task'
     delete:
-      summary: Delete tasks
+      summary: Delete multiple tasks
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -53,12 +55,9 @@ paths:
                   $ref: '#/components/schemas/Task'
   /tasks/{id}:
     get:
+      summary: Get task by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/TaskId'
       responses:
         '200':
           description: OK
@@ -69,12 +68,9 @@ paths:
         '404':
           description: Not Found
     delete:
+      summary: Delete task by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/TaskId'
       responses:
         '200':
           description: OK
@@ -93,3 +89,17 @@ components:
           type: string
         completed:
           type: boolean
+    TaskInput:
+      type: object
+      properties:
+        title:
+          type: string
+        completed:
+          type: boolean
+  parameters:
+    TaskId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer

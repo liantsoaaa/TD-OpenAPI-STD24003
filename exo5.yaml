@@ -1,66 +1,226 @@
 openapi: 3.0.0
 info:
-  title: Orders API
+  title: E-commerce API
+  description: API for managing products and orders
   version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+tags:
+  - name: Products
+    description: Operations related to products
+  - name: Orders
+    description: Operations related to orders
 paths:
   /products:
     get:
-      tags: [Products]
-      # ... (reprendre la définition de l'exercice 4)
-  /orders:
-    get:
-      tags: [Orders]
+      tags:
+        - Products
+      summary: Search products
+      description: Retrieve a list of products with optional filtering
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Query'
       responses:
         '200':
-          description: OK
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              examples:
+                MultipleProducts:
+                  summary: Example with multiple products
+                  value:
+                    - name: "Laptop"
+                      expiration_datetime: "2025-12-31T23:59:59Z"
+                      price: 999.99
+                    - name: "Smartphone"
+                      expiration_datetime: "2025-06-30T12:00:00Z"
+                      price: 499.99
+                EmptyList:
+                  summary: Example with empty result
+                  value: []
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get paginated orders list
+      description: Retrieve a paginated list of orders
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+              examples:
+                OrdersExample:
+                  summary: Example orders response
+                  value:
+                    - identifier: 1
+                      customer_name: "John Doe"
+                      creation_datetime: "2024-08-23T10:30:00Z"
+                      total_amount: 1499.98
+                    - identifier: 2
+                      customer_name: "Jane Smith"
+                      creation_datetime: "2024-08-22T15:45:00Z"
+                      total_amount: 299.99
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
-      tags: [Orders]
+      tags:
+        - Orders
+      summary: Create a new order
+      description: Create a new order (requires authentication)
       security:
         - BasicAuth: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/OrderInput'
+            examples:
+              OrderCreationExample:
+                summary: Example order creation request
+                value:
+                  customer_name: "John Doe"
+                  total_amount: 1499.98
       responses:
         '201':
-          description: Created
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                OrderResponseExample:
+                  summary: Example order response
+                  value:
+                    identifier: 123
+                    customer_name: "John Doe"
+                    creation_datetime: "2024-08-23T10:30:00Z"
+                    total_amount: 1499.98
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                UnauthorizedExample:
+                  summary: Unauthorized access attempt
+                  value:
+                    error: "Authentication required"
 components:
   schemas:
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Laptop"
+        expiration_datetime:
+          type: string
+          format: date-time
+          example: "2025-12-31T23:59:59Z"
+        price:
+          type: number
+          format: float
+          example: 999.99
     Order:
       type: object
       properties:
         identifier:
           type: integer
+          example: 1
         customer_name:
           type: string
+          example: "John Doe"
         creation_datetime:
           type: string
           format: date-time
+          example: "2024-08-23T10:30:00Z"
         total_amount:
           type: number
           format: float
+          example: 1499.98
+    OrderInput:
+      type: object
+      properties:
+        customer_name:
+          type: string
+          example: "John Doe"
+        total_amount:
+          type: number
+          format: float
+          example: 1499.98
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: "An error occurred"
   parameters:
-    page:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        default: 10
+        example: 20
+    Query:
+      name: q
+      in: query
+      description: Search query term
+      required: false
+      schema:
+        type: string
+        example: "laptop"
+    Page:
       name: page
       in: query
+      description: Page number for pagination
+      required: true
       schema:
         type: integer
-    size:
+        minimum: 1
+        default: 1
+        example: 1
+    Size:
       name: size
       in: query
+      description: Number of items per page
+      required: true
       schema:
         type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
+      description: Basic authentication

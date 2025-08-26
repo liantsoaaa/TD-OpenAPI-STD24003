@@ -7,8 +7,8 @@ paths:
     get:
       summary: Search products
       parameters:
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/q'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Query'
       responses:
         '200':
           description: OK
@@ -19,15 +19,15 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
               examples:
-                multiple:
+                MultipleProducts:
                   value:
-                    - name: Product 1
-                      expiration_datetime: '2024-12-31T23:59:59Z'
+                    - name: "Product A"
+                      expiration_datetime: "2024-12-31T23:59:59Z"
                       price: 19.99
-                    - name: Product 2
-                      expiration_datetime: '2024-06-30T12:00:00Z'
+                    - name: "Product B"
+                      expiration_datetime: "2024-06-30T12:00:00Z"
                       price: 29.99
-                empty:
+                EmptyList:
                   value: []
 components:
   schemas:
@@ -43,13 +43,15 @@ components:
           type: number
           format: float
   parameters:
-    limit:
+    Limit:
       name: limit
       in: query
+      required: false
       schema:
         type: integer
-    q:
+    Query:
       name: q
       in: query
+      required: false
       schema:
         type: string

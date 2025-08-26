@@ -5,18 +5,18 @@ info:
 paths:
   /users:
     get:
-      summary: Get users
+      summary: Get users list
       parameters:
         - name: page
           in: query
+          required: true
           schema:
             type: integer
-          required: true
         - name: size
           in: query
+          required: true
           schema:
             type: integer
-          required: true
       responses:
         '200':
           description: OK
@@ -31,10 +31,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     User:
@@ -46,3 +43,11 @@ components:
           type: string
         email:
           type: string
+          format: email
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: Bad types for provided query parameters
