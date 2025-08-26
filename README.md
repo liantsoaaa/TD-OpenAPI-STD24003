@@ -14,7 +14,7 @@ Ce dépôt contient les spécifications **OpenAPI 3 (OAS3)** pour le TD OpenAPI 
 - `exo3.yml` → API gestion de tâches (CRUD, components/schemas)
 - `exo4.yml` → API produits (params réutilisables, examples)
 - `exo5.yml` → API commandes + authentification Basic Auth + tags
-- `exo6.yml` → API UserProfile complexe avec sous-schemas et PUT ciblés
+- `exo6.yml` → API UserProfile complexe avec sous schemas et PUT ciblés
 
 ## Consignes importantes
 - Chaque exercice = 1 fichier `exoX.yml` à **la racine** du projet
